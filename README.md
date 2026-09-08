@@ -82,16 +82,6 @@ next step. Setup and per-camera focus calibration are manual and slow; the contr
 software is a working prototype with no GUI, no bulk camera configuration and no
 light or fan control.
 
-## Repository contents
-
-```
-cad/          Enclosures, mounts, lighting modules — STEP and STL
-electronics/  Wiring diagrams for the power box and stand
-software/     Capture scripts (libcamera, Python)
-results/      Sample reconstructions and deviation maps
-docs/         Method, calibration procedure, accuracy evaluation
-images/       Photos of the rig and captured data
-```
 
 <!-- DOPLNIT: capture skript je tady nejcennější položka — ukazuje, že umíš
      rozchodit celý měřicí řetězec, ne jen navrhnout hardware. Nahraj ho
