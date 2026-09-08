@@ -1,10 +1,6 @@
 # 32-camera photogrammetry rig for 3D concrete printing
 
-![Camera rig](images/01-rig.jpg)
-
-<!-- DOPLNIT: fotka postaveného stojanu s kamerami. Hned pod ni bych dal
-     barevnou mapu odchylek z GOM Inspect — ta dvojice "hardware + ověřený
-     výsledek" prodá celý projekt sama. -->
+![Camera rig in the lab](images/01-rig.jpg)
 
 A measurement system that captures a 3D-printed concrete structure from 32
 synchronized viewpoints at a single instant and reconstructs it
@@ -17,6 +13,11 @@ slow to catch it and a single camera cannot see around the part. Thirty-two
 cameras firing together freeze the whole geometry in one frame, which makes it
 possible to track deformation over time and capture the collapse itself — and to
 produce validation data for simulation software.
+
+![Deviation map against a reference laser scan](images/02-deviation-map.png)
+
+*Deviation against a MetraScan laser scan: 0.2–1 mm across the wall, concentrated
+within individual printed layers.*
 
 ## Specification
 
@@ -36,63 +37,97 @@ produce validation data for simulation software.
 
 ## How it works
 
-**Why photogrammetry and not a scanner.** A MetraScan-class laser scanner reaches
-0.025 mm, an order better than this rig — but it needs the object to hold still
-while it sweeps. A collapsing concrete wall does not. Thirty-two fixed cameras
-trade accuracy for a capture that is effectively instantaneous, which is the only
-way to get the moment that actually matters.
+### Why photogrammetry and not a scanner
 
-**Stand design, and the version that failed.** The first stand was my own build:
-2020 aluminium extrusion with 3D-printed joints and a telescoping centre section.
-It adjusted well and locked in position, but the printed joints were the weak
-point — the threads stripped after a few tightening cycles, and the top joint
-would not hold a one-metre profile even without cameras on it. I scrapped it and
-switched to a commercial photographic stand (Larmor GP-280A-Z, 100–280 cm, 9 kg
-capacity, 2.65 kg) with FT-S1 clamps and ball heads. Stiffness and setup time both
-improved, and the whole system became something two people can carry. Buying the
-solved part of the problem was the right call.
+A MetraScan-class laser scanner reaches 0.025 mm, an order better than this rig —
+but it needs the object to hold still while it sweeps. A collapsing concrete wall
+does not. Thirty-two fixed cameras trade accuracy for a capture that is
+effectively instantaneous, which is the only way to get the moment that actually
+matters.
 
-**Camera enclosures.** The HQ camera connects to the Pi over a fragile ribbon
-cable, so each unit is housed in a printed PET-G enclosure carrying the board, the
-camera module, a Noctua NF-A4x10 PWM fan and a dust filter — the rig works next to
-a concrete printer, so dust ingress is a real failure mode. Parts are joined with
-M3 threaded inserts and designed to print with minimal support.
+![Resolved camera positions around the object](images/03-alignment.png)
 
-**Power distribution.** Each stand has its own enclosure with two switching
-supplies: a Meanwell LPV-100-5 (5 V, 12 A) for four Pis and an FTPC60V24-S
-(24 V, 2.5 A) for the LED modules. All connectors are keyed by type so camera,
-light and signal cables cannot be swapped or reversed. Lighting intensity is
-driven through a MOSFET from one of the Pis.
+*The 32 resolved camera positions after alignment. Even coverage in regular rows
+is what makes the reconstruction hold together — a single camera out of place
+shows up here before it shows up in the mesh.*
 
-**Scale and coordinate system.** A glass cross with nine surveyed coded targets
-defines both scale and orientation, since the points span a plane. Bar etalons are
-added for larger objects. RealityCapture detects the cross automatically; the bar
-targets had to be picked manually, which is the least elegant part of the workflow.
+### Stand design, and the version that failed
 
-**Validation.** Three capture sets at different exposure settings were
-reconstructed and compared against a MetraScan laser scan in GOM Inspect 2018.
-Deviations ran 0.2–1 mm, concentrated within individual printed layers rather than
-in the overall geometry. Comparing the three reconstructions against each other
-gave ~0.3 mm, which is the repeatability figure that matters for tracking
-deformation over time.
+The first stand was my own build: 2020 aluminium extrusion with 3D-printed joints
+and a telescoping centre section. It adjusted well and locked in position, but the
+printed joints were the weak point — the threads stripped after a few tightening
+cycles, and the top joint would not hold a one-metre profile even without cameras
+on it.
 
-**Limits.** Large featureless surfaces reconstruct poorly — there is nothing for
-the matching to lock onto. Projecting a dot pattern solves it and is the obvious
-next step. Setup and per-camera focus calibration are manual and slow; the control
-software is a working prototype with no GUI, no bulk camera configuration and no
-light or fan control.
+![First stand prototype](images/04-stand-v1.jpg)
 
+I scrapped it and switched to a commercial photographic stand (Larmor GP-280A-Z,
+100–280 cm, 9 kg capacity, 2.65 kg) with FT-S1 clamps and ball heads. Stiffness
+and setup time both improved, and the whole system became something two people can
+carry. Buying the solved part of the problem was the right call.
 
-<!-- DOPLNIT: capture skript je tady nejcennější položka — ukazuje, že umíš
-     rozchodit celý měřicí řetězec, ne jen navrhnout hardware. Nahraj ho
-     i v prototypovém stavu. A ověř si u katedry, co smíš zveřejnit. -->
+### Camera enclosures
+
+The HQ camera connects to the Pi over a fragile ribbon cable, so each unit is
+housed in a printed PET-G enclosure carrying the board, the camera module, a
+Noctua NF-A4x10 PWM fan and a dust filter — the rig works next to a concrete
+printer, so dust ingress is a real failure mode. Parts are joined with M3 threaded
+inserts and designed to print with minimal support.
+
+![Camera enclosure — exploded view and assembled unit](images/05-camera.jpg)
+
+### Power distribution
+
+Each stand has its own enclosure with two switching supplies: a Meanwell LPV-100-5
+(5 V, 12 A) for four Pis and an FTPC60V24-S (24 V, 2.5 A) for the LED modules. All
+connectors are keyed by type so camera, light and signal cables cannot be swapped
+or reversed. Lighting intensity is driven through a MOSFET from one of the Pis.
+
+![Power distribution box](images/06-power-box.jpg)
+
+### Scale and coordinate system
+
+A glass cross with nine surveyed coded targets defines both scale and orientation,
+since the points span a plane. Bar etalons are added for larger objects.
+RealityCapture detects the cross automatically; the bar targets had to be picked
+manually on every frame, which is the least elegant part of the workflow.
+
+![Coded target cross](images/07-scale-cross.jpg)
+
+### Validation
+
+Three capture sets at different exposure settings were reconstructed and compared
+against a MetraScan laser scan in GOM Inspect 2018. Deviations ran 0.2–1 mm,
+concentrated within individual printed layers rather than in the overall geometry.
+Comparing the three reconstructions against each other gave ~0.3 mm, which is the
+repeatability figure that matters for tracking deformation over time.
+
+![Reconstructed mesh detail](images/08-mesh-detail.jpg)
+
+*Reconstructed surface detail. Individual print layers and their defects are
+resolved directly from the photographs.*
+
+### Limits
+
+Large featureless surfaces reconstruct poorly — there is nothing for the matching
+to lock onto. Projecting a dot pattern solves it and is the obvious next step.
+Setup and per-camera focus calibration are manual and slow; the control software
+is a working prototype with no GUI, no bulk camera configuration and no light or
+fan control.
+
+## Repository contents
+
+```
+cad/          Enclosures, mounts, lighting modules — STEP and STL
+electronics/  Wiring diagrams for the power box and stand
+software/     Capture scripts (libcamera, Python)
+results/      Sample reconstructions and deviation maps
+docs/         Method, calibration procedure, accuracy evaluation
+images/       Photos of the rig and captured data
+```
 
 ## Thesis
 
 Vývoj systému pro bezkontaktní analýzu deformací objektů vyrobených 3D tiskem
 z betonových směsí (2024), Technical University of Liberec, Faculty of Mechanical
 Engineering. Supervisor: doc. Ing. Radomír Mendřický, Ph.D.
-
----
-
-[← zpět na přehled projektů](../README.md)
