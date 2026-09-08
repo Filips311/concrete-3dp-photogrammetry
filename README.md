@@ -134,17 +134,6 @@ Setup and per-camera focus calibration are manual and slow. The control software
 is a working prototype: no GUI, no bulk camera configuration, no light or fan
 control. Bar-etalon targets have to be picked by hand on every frame.
 
-## Repository contents
-
-```
-cad/          Enclosures, mounts, lighting modules — STEP and STL
-electronics/  Wiring diagrams for the power box and stand
-software/     Capture scripts (libcamera, Python)
-results/      Sample reconstructions and deviation maps
-docs/         Method, calibration procedure, accuracy evaluation
-images/       Photos of the rig and captured data
-```
-
 ## Thesis
 
 Vývoj systému pro bezkontaktní analýzu deformací objektů vyrobených 3D tiskem
